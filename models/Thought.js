@@ -1,33 +1,30 @@
 const { Schema, model } = require('mongoose');
+const userSchema = require('/Users');
 
-const courseSchema = new Schema(
+const thoughtSchema = new Schema(
   {
-    courseName: {
+    thoughtText: {
       type: String,
       required: true,
+      max_length: 280,
     },
-    inPerson: {
-      type: Boolean,
-      default: true,
-    },
-    startDate: {
+    createdAt: {
       type: Date,
       default: Date.now(),
+
     },
-    endDate: {
-      type: Date,
-      default: () => new Date(+new Date() + 84 * 24 * 60 * 60 * 1000),
-    },
-    students: [
+    username: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'Student',
+        ref: 'user',
       },
     ],
+    reactions: [reactionsSchema]
   },
   {
     toJSON: {
       virtuals: true,
+      getters: true
     },
     id: false,
   }
