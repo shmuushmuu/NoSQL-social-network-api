@@ -4,6 +4,7 @@ module.exports = {
   // Get all thoughts
   getThoughts(req, res) {
     Thought.find()
+      .select('-__v')
       .then((thoughts) => res.json(thoughts))
       .catch((err) => res.status(500).json(err));
   },
@@ -21,7 +22,24 @@ module.exports = {
   // Create a thought
   createThought(req, res) {
     Thought.create(req.body)
-      .then((thought) => res.json(thought))
+      .then((thought) => {
+        console.log(thought)
+        return User.findOneAndUpdate(
+          { _id: req.body.userId },
+          { $addToSet: { thoughts: thought._id } },
+          {
+            runValidators: false,
+            new: true
+          }
+        );
+      })
+      .then((user) => 
+        !user
+          ? res.status(404).json({
+              message: 'Thought has been created, but no user has been found with that ID',
+          })
+          : res.json('Thought created!')
+      )
       .catch((err) => {
         console.log(err);
         return res.status(500).json(err);

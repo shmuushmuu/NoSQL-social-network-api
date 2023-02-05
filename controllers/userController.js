@@ -5,10 +5,10 @@ module.exports = {
   // Get all users
   getUsers(req, res) {
     User.find()
+      .select('-__v')
       .then(async (users) => {
         const userObj = {
           users,
-          headCount: await headCount(),
         };
         return res.json(userObj);
       })
@@ -41,24 +41,42 @@ module.exports = {
       .then((user) => res.json(user))
       .catch((err) => res.status(500).json(err));
   },
+
+  updateUser(req, res) {
+    User.findOneAndUpdate(
+      { id: req.params.userId },
+      { $set: req.body },
+      {
+        runValidators: true,
+        new: true
+      }
+    )
+      .then((user =>
+        !user
+          ? res.status(404).json({ message: 'No user with this id!' })
+          : res.json(user)
+      )
+      )
+      .catch((err) => res.status(500).json(err));
+  },
   // Delete a user and remove them from the course
   deleteUser(req, res) {
     User.findOneAndRemove({ _id: req.params.userId })
       .then((user) =>
         !user
           ? res.status(404).json({ message: 'No such user exists' })
-          : Course.findOneAndUpdate(
+          : user.findOneAndUpdate(
             { users: req.params.userId },
             { $pull: { users: req.params.userId } },
             { new: true }
           )
       )
-      .then((course) =>
+      .then((user) =>
         !course
           ? res.status(404).json({
-            message: 'Student deleted, but no courses found',
+            message: 'User deleted, but no thoughts found',
           })
-          : res.json({ message: 'Student successfully deleted' })
+          : res.json({ message: 'User successfully deleted' })
       )
       .catch((err) => {
         console.log(err);
@@ -73,7 +91,7 @@ module.exports = {
     User.findOneAndUpdate(
       { _id: req.params.userId },
       { $addToSet: { assignments: req.body } },
-      { runValidators: true, new: true }
+      // { runValidators: true, new: true }
     )
       .then((user) =>
         !user
@@ -89,7 +107,7 @@ module.exports = {
     User.findOneAndUpdate(
       { _id: req.params.userId },
       { $pull: { friend: { friendId: req.params.friendId } } },
-      { runValidators: true, new: true }
+      // { runValidators: true, new: true }
     )
       .then((user) =>
         !user
