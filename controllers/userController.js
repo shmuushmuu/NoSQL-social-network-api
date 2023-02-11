@@ -12,7 +12,6 @@ module.exports = {
         return res.json(userObj);
       })
       .catch((err) => {
-        console.log(err);
         return res.status(500).json(err);
       });
   },
@@ -27,7 +26,6 @@ module.exports = {
           : res.json(user)
       )
       .catch((err) => {
-        console.log(err);
         return res.status(500).json(err);
       });
   },
@@ -75,14 +73,12 @@ module.exports = {
           : res.json({ message: 'User successfully deleted' })
       )
       .catch((err) => {
-        console.log(err);
         res.status(500).json(err);
       });
   },
 
   // Adds a friend
   addFriend(req, res) {
-    console.log('You are adding a friend');
     console.log(req.body);
     User.findOneAndUpdate(
       { _id: req.params.userId },

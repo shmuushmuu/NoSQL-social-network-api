@@ -23,7 +23,6 @@ module.exports = {
   createThought(req, res) {
     Thought.create(req.body)
       .then((thought) => {
-        console.log(thought)
         return User.findOneAndUpdate(
           { _id: req.body.userId },
           { $addToSet: { thoughts: thought._id } },
@@ -41,7 +40,6 @@ module.exports = {
           : res.json('Thought created!')
       )
       .catch((err) => {
-        console.log(err);
         return res.status(500).json(err);
       });
   },
@@ -66,7 +64,7 @@ module.exports = {
       .then((thought) =>
         !thought
           ? res.status(404).json({ message: 'No thought with this id!' })
-          : res.json(course)
+          : res.json(thought)
       )
       .catch((err) => res.status(500).json(err));
   },
@@ -85,7 +83,6 @@ module.exports = {
           : res.json(thought)
       )
       .catch((err) => {
-        console.log(err)
         res.status(500).json(err)
       });
   },
@@ -103,7 +100,6 @@ module.exports = {
           : res.json(thought)
       )
       .catch((err) => {
-        console.log(err)
         res.status(500).json(err)
       });
   },
